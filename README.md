@@ -1,0 +1,2 @@
+# kinodash
+Browser start page
