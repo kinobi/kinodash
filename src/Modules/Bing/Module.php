@@ -5,21 +5,23 @@ namespace Kinodash\Modules\Bing;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\Request;
 use Kinodash\Modules\Module as KinodashModule;
-use League\Flysystem\FilesystemInterface;
+use League\Flysystem\Filesystem;
 
 class Module implements KinodashModule
 {
+    const PATH = 'public/bing.jpg';
+
     /**
      * @var HttpClient
      */
     private HttpClient $httpClient;
 
     /**
-     * @var FilesystemInterface
+     * @var Filesystem
      */
-    private FilesystemInterface $filesystem;
+    private Filesystem $filesystem;
 
-    public function __construct(HttpClient $httpClient, FilesystemInterface $filesystem)
+    public function __construct(HttpClient $httpClient, Filesystem $filesystem)
     {
         $this->httpClient = $httpClient;
         $this->filesystem = $filesystem;
@@ -52,15 +54,36 @@ class Module implements KinodashModule
         $request = new Request('GET', $bing . $data->images[0]->url);
         $response = $this->httpClient->send($request);
 
-        $this->filesystem->put('local://public/bing.jpg', $response->getBody()->getContents());
+        $this->filesystem->put(self::PATH, $response->getBody()->getContents());
     }
 
     public function head(): ?string
     {
-        return <<<'HEAD'
+        $s3Adapter = $this->filesystem->getAdapter();
+        $s3Client = $s3Adapter->getClient();
+        $command = $s3Client->getCommand(
+            'GetObject',
+            array_merge(
+                [
+                    'Bucket' => $s3Adapter->getBucket(),
+                    'Key' => self::PATH,
+                ],
+                []
+            )
+        );
+
+        $url = $s3Client
+            ->createPresignedRequest(
+                $command,
+                (new \DateTimeImmutable())->add(new \DateInterval('P1D'))
+            )
+            ->getUri();
+
+        return <<<HEAD
 <style>
 html {
-    background-image: url("/assets/bing.jpg");
+    background-image: url($url);
+    background-position: center;
 }
 </style>
 HEAD;

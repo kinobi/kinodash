@@ -2,15 +2,33 @@
 
 declare(strict_types=1);
 
+use Aws\S3\S3Client;
 use DI\ContainerBuilder;
 use GuzzleHttp\Client as HttpClient;
 use Kinodash\App\Controllers\DashboardController;
 use Kinodash\Modules\Bing\Module as ModuleBing;
-use League\Flysystem\MountManager as Filesystem;
+use League\Flysystem\AwsS3v3\AwsS3Adapter;
+use League\Flysystem\Filesystem;
 use League\Plates\Engine as Plates;
 use Psr\Container\ContainerInterface;
 
+use function DI\env;
+
 $builder = new ContainerBuilder();
+
+$settings = [
+    'storage.s3' => [
+        'client' => [
+            'credentials' => [
+                'key' => env('AWS_ACCESS_KEY_ID'),
+                'secret' => env('AWS_SECRET_ACCESS_KEY'),
+            ],
+            'region' => env('AWS_S3_REGION'),
+            'version' => 'latest',
+        ],
+        'bucket' => env('AWS_S3_BUCKET_NAME'),
+    ]
+];
 
 $infra = [
     HttpClient::class => static function (ContainerInterface $c) {
@@ -20,13 +38,11 @@ $infra = [
         return new Plates(__DIR__ . '/../templates');
     },
     Filesystem::class => static function (ContainerInterface $c) {
-        $local = new League\Flysystem\Adapter\Local(__DIR__ . '/../var/storage');
+        $client = new S3Client($c->get('storage.s3')['client']);
 
-        return new Filesystem(
-            [
-                'local' => new League\Flysystem\Filesystem($local),
-            ]
-        );
+        $adapter = new AwsS3Adapter($client, $c->get('storage.s3')['bucket']);
+
+        return new Filesystem($adapter);
     },
 ];
 
@@ -48,6 +64,7 @@ $controllers = [
 
 $builder->addDefinitions(
     array_merge(
+        $settings,
         $infra,
         $modules,
         $controllers
