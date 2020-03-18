@@ -8,6 +8,9 @@
     <title>KinoDash</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <?php foreach ($modules as $module): ?>
+        <?php echo $module->head() ?>
+    <?php endforeach ?>
 </head>
 <body>
 <section class="section">
@@ -17,5 +20,10 @@
         </h1>
     </div>
 </section>
+<?php foreach ($modules as $module): ?>
+    <?php if ($module->script()): ?>
+        <script><?php echo $module->script() ?></script>
+    <?php endif ?>
+<?php endforeach ?>
 </body>
 </html>
