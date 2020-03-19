@@ -14,10 +14,14 @@
 </head>
 <body>
 <section class="section">
-    <div class="container">
-        <h1 class="title">
-            Hello World
-        </h1>
+    <div class="columns is-vcentered">
+        <div class="column"></div>
+        <div class="column">
+            <h1 class="title has-text-centered">
+                Hello World
+            </h1>
+        </div>
+        <div class="column"></div>
     </div>
 </section>
 <?php foreach ($modules as $module): ?>

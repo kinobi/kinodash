@@ -4,23 +4,17 @@ declare(strict_types=1);
 
 namespace Kinodash\App\Controllers;
 
-use Kinodash\Modules\Module;
+use Kinodash\Modules\Collection as ModuleCollection;
 use League\Plates\Engine as View;
 use Psr\Http\Message\ResponseInterface as Response;
 
 class DashboardController
 {
-    /**
-     * @var View
-     */
     private View $view;
 
-    /**
-     * @var array|Module[]
-     */
-    private array $modules;
+    private ModuleCollection $modules;
 
-    public function __construct(View $view, Module ...$modules)
+    public function __construct(View $view, ModuleCollection $modules)
     {
         $this->view = $view;
         $this->modules = $modules;
@@ -28,12 +22,7 @@ class DashboardController
 
     public function __invoke(Response $response): Response
     {
-        array_walk(
-            $this->modules,
-            static function (Module $module) {
-                $module->boot();
-            },
-        );
+        $this->modules->boot();
 
         $response->getBody()->write(
             $this->view->render('dashboard', ['modules' => $this->modules])

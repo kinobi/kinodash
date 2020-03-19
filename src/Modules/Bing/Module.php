@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kinodash\Modules\Bing;
 
 use Carbon\CarbonImmutable;
@@ -12,14 +14,8 @@ class Module implements KinodashModule
 {
     public const PATH = 'public/bing.jpg';
 
-    /**
-     * @var HttpClient
-     */
     private HttpClient $httpClient;
 
-    /**
-     * @var Filesystem
-     */
     private Filesystem $filesystem;
 
     public function __construct(HttpClient $httpClient, Filesystem $filesystem)
@@ -41,7 +37,7 @@ class Module implements KinodashModule
         $market = '&mkt=en-US';
         $const = '&n=1';
 
-        $request = new Request('GET', sprintf('%s%s%s%s%s%s', $bing, $api, $format, $day, $market, $const));
+        $request = new Request('GET', "{$bing}{$api}{$format}{$day}{$market}{$const}");
 
         $response = $this->httpClient->send($request);
         $data = json_decode($response->getBody()->getContents(), false, 512, JSON_THROW_ON_ERROR);
@@ -58,6 +54,10 @@ class Module implements KinodashModule
 
         return <<<HEAD
 <style>
+body,
+html {
+ height:100%;
+}
 html {
     background-image: url($url);
     background-position: top center;
