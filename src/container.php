@@ -6,7 +6,8 @@ use Aws\S3\S3Client;
 use DI\ContainerBuilder;
 use GuzzleHttp\Client as HttpClient;
 use Kinodash\App\Controllers\DashboardController;
-use Kinodash\Modules\Bing\Module as ModuleBing;
+use Kinodash\Modules\Bing\BingModule;
+use Kinodash\Modules\Greeting\GreetingModule;
 use Kinodash\Modules\ModuleCollection;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
@@ -48,15 +49,16 @@ $infra = [
 ];
 
 $modules = [
-    ModuleBing::class => static function (ContainerInterface $c) {
-        return new ModuleBing($c->get(HttpClient::class), $c->get(Filesystem::class));
+    BingModule::class => static function (ContainerInterface $c) {
+        return new BingModule($c->get(HttpClient::class), $c->get(Filesystem::class));
     }
 ];
 
 $controllers = [
     DashboardController::class => static function (ContainerInterface $c) {
         $modules = [
-            $c->get(ModuleBing::class),
+            new GreetingModule(),
+            $c->get(BingModule::class),
         ];
 
         return new DashboardController($c->get(Plates::class), new ModuleCollection(...$modules));

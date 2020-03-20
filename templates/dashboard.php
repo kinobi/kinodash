@@ -16,16 +16,18 @@
 </head>
 <body>
 <section class="section">
-    <div class="columns is-vcentered">
-        <div class="column"></div>
-        <div class="column">
-            <?php foreach ($modules as $module): ?>
-                <?php if ($center = $module->center()): ?>
-                    <?= $this->fetch($module->id() . '::' . $center->template(), $center->data()) ?>
-                <?php endif ?>
-            <?php endforeach ?>
+    <div class="container">
+        <div class="columns is-vcentered">
+            <div class="column"></div>
+            <div class="column is-half">
+                <?php foreach ($modules as $module): ?>
+                    <?php if ($center = $module->center()): ?>
+                        <?= $this->fetch($module->id() . '::' . $center->template(), $center->data()) ?>
+                    <?php endif ?>
+                <?php endforeach ?>
+            </div>
+            <div class="column"></div>
         </div>
-        <div class="column"></div>
     </div>
 </section>
 <?php foreach ($modules as $module): ?>

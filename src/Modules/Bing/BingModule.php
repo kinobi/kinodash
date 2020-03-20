@@ -8,14 +8,14 @@ use Carbon\CarbonImmutable;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
-use Kinodash\Modules\Module as KinodashModule;
+use Kinodash\Modules\Module;
 use Kinodash\Modules\ModuleTemplate;
 use Kinodash\Modules\ModuleView;
 use League\Flysystem\Filesystem;
 use League\Plates\Engine as View;
 use Psr\Http\Message\UriInterface;
 
-class Module implements KinodashModule
+class BingModule implements Module
 {
     use ModuleTemplate;
 
@@ -44,18 +44,17 @@ class Module implements KinodashModule
     {
         $view->addFolder($this->id, __DIR__ . '/templates');
 
-        parse_str($config->getQuery(), $configQuery);
-        $query = array_merge(
+        $queryString = $this->createQueryString(
+            $config,
             [
                 'format' => 'js',
                 'idx' => 0,
                 'mkt' => 'en-US',
                 'n' => 1,
-            ],
-            $configQuery
+            ]
         );
 
-        $apiUri = (new Uri(self::BING_BASE_URL . '/HPImageArchive.aspx'))->withQuery(http_build_query($query));
+        $apiUri = (new Uri(self::BING_BASE_URL . '/HPImageArchive.aspx'))->withQuery($queryString);
         $request = new Request('GET', $apiUri);
         $response = $this->httpClient->send($request);
         $data = json_decode($response->getBody()->getContents(), false, 512, JSON_THROW_ON_ERROR);
@@ -93,5 +92,17 @@ class Module implements KinodashModule
                 CarbonImmutable::now()->addRealDay()
             )
             ->getUri();
+    }
+
+    private function createQueryString(UriInterface $config, array $defaults = []): string
+    {
+        parse_str($config->getQuery(), $configQuery);
+
+        return http_build_query(
+            array_merge(
+                $defaults,
+                $configQuery
+            )
+        );
     }
 }
