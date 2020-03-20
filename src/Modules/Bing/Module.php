@@ -10,7 +10,9 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Kinodash\Modules\Module as KinodashModule;
 use Kinodash\Modules\ModuleTemplate;
+use Kinodash\Modules\ModuleView;
 use League\Flysystem\Filesystem;
+use League\Plates\Engine as View;
 use Psr\Http\Message\UriInterface;
 
 class Module implements KinodashModule
@@ -34,13 +36,15 @@ class Module implements KinodashModule
 
     /**
      * @param UriInterface $config
+     * @param View $view
      * @see https://github.com/whizzzkid/bing-wallpapers-for-linux/blob/master/bingwallpaper
      * @todo error checks
      */
-    public function boot(UriInterface $config): void
+    public function boot(UriInterface $config, View $view): void
     {
-        parse_str($config->getQuery(), $configQuery);
+        $view->addFolder($this->id, __DIR__ . '/templates');
 
+        parse_str($config->getQuery(), $configQuery);
         $query = array_merge(
             [
                 'format' => 'js',
@@ -63,26 +67,12 @@ class Module implements KinodashModule
         $this->booted = true;
     }
 
-    public function head(): ?string
+    public function head(): ?ModuleView
     {
-        $url = $this->getBackgroundUri();
-
-        return <<<HEAD
-<style>
-body,
-html {
- height:100%;
-}
-html {
-    background-image: url($url);
-    background-position: top center;
-    background-repeat: no-repeat;
-}
-</style>
-HEAD;
+        return new ModuleView('head', ['url' => $this->getBackgroundUri()]);
     }
 
-    private function getBackgroundUri()
+    private function getBackgroundUri(): UriInterface
     {
         $s3Adapter = $this->filesystem->getAdapter();
         $s3Client = $s3Adapter->getClient();

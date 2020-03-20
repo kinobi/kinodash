@@ -24,7 +24,7 @@ class DashboardController
 
     public function __invoke(Request $request, Response $response): Response
     {
-        $this->modules->boot(ModuleConfiguration::fromRequest($request));
+        $this->modules->boot(ModuleConfiguration::fromRequest($request), $this->view);
 
         $response->getBody()->write(
             $this->view->render('dashboard', ['modules' => $this->modules->filterBooted()])

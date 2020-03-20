@@ -2,18 +2,17 @@
 
 namespace Kinodash\Modules;
 
+use League\Plates\Engine as View;
 use Psr\Http\Message\UriInterface;
 
 interface Module
 {
-    public function boot(UriInterface $config): void;
+    public function boot(UriInterface $config, View $view): void;
 
     /**
      * Return a list of HTML tags for the Module runtime
-     *
-     * @todo Return a typed Collection of HTML head tags
      */
-    public function head(): ?string;
+    public function head(): ?ModuleView;
 
     /**
      * Return the Module id
@@ -27,8 +26,6 @@ interface Module
 
     /**
      * Return a list of script for the Module runtime
-     *
-     * @todo Return a typed Collection of scripts with src only or body
      */
-    public function script(): ?string;
+    public function script(): ?ModuleView;
 }

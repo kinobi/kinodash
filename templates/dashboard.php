@@ -9,7 +9,9 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <?php foreach ($modules as $module): ?>
-        <?= $module->head() ?>
+        <?php if ($head = $module->head()): ?>
+            <?= $this->fetch($module->id() . '::' . $head->template(), $head->data()) ?>
+        <?php endif ?>
     <?php endforeach ?>
 </head>
 <body>
@@ -25,8 +27,8 @@
     </div>
 </section>
 <?php foreach ($modules as $module): ?>
-    <?php if ($module->script()): ?>
-        <script><?= $module->script() ?></script>
+    <?php if ($script = $module->script()): ?>
+        <?= $this->fetch($module->id() . '::' . $script->template(), $script->data()) ?>
     <?php endif ?>
 <?php endforeach ?>
 </body>

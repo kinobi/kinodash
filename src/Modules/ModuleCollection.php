@@ -6,6 +6,7 @@ namespace Kinodash\Modules;
 
 use ArrayIterator;
 use IteratorAggregate;
+use League\Plates\Engine as View;
 use Psr\Http\Message\UriInterface;
 
 class ModuleCollection implements IteratorAggregate
@@ -24,8 +25,9 @@ class ModuleCollection implements IteratorAggregate
      * Boot modules in config
      *
      * @param ModuleConfiguration $configs
+     * @param View $view
      */
-    public function boot(ModuleConfiguration $configs): void
+    public function boot(ModuleConfiguration $configs, View $view): void
     {
         $moduleList = $this->registerModules();
 
@@ -36,7 +38,7 @@ class ModuleCollection implements IteratorAggregate
                 continue;
             }
 
-            $this->modules[$key]->boot($config);
+            $this->modules[$key]->boot($config, $view);
         }
     }
 

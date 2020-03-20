@@ -4,14 +4,12 @@ declare(strict_types=1);
 
 namespace Kinodash\Modules;
 
-use Psr\Http\Message\UriInterface;
-
 trait ModuleTemplate
 {
     /**
      * @inheritDoc
      */
-    public function head(): ?string
+    public function head(): ?ModuleView
     {
         return null;
     }
@@ -35,7 +33,7 @@ trait ModuleTemplate
     /**
      * @inheritDoc
      */
-    public function script(): ?string
+    public function script(): ?ModuleView
     {
         return null;
     }
