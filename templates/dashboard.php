@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
     <?php foreach ($modules as $module): ?>
-        <?php echo $module->head() ?>
+        <?= $module->head() ?>
     <?php endforeach ?>
 </head>
 <body>
@@ -26,7 +26,7 @@
 </section>
 <?php foreach ($modules as $module): ?>
     <?php if ($module->script()): ?>
-        <script><?php echo $module->script() ?></script>
+        <script><?= $module->script() ?></script>
     <?php endif ?>
 <?php endforeach ?>
 </body>

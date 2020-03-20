@@ -9,15 +9,18 @@ use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Kinodash\Modules\Module as KinodashModule;
+use Kinodash\Modules\ModuleTemplate;
 use League\Flysystem\Filesystem;
 use Psr\Http\Message\UriInterface;
 
 class Module implements KinodashModule
 {
+    use ModuleTemplate;
+
     public const PATH = 'public/bing.jpg';
     public const BING_BASE_URL = 'http://www.bing.com';
 
-    private bool $booted = false;
+    private string $id = 'bing';
 
     private HttpClient $httpClient;
 
@@ -37,6 +40,7 @@ class Module implements KinodashModule
     public function boot(UriInterface $config): void
     {
         parse_str($config->getQuery(), $configQuery);
+
         $query = array_merge(
             [
                 'format' => 'js',
@@ -76,27 +80,6 @@ html {
 }
 </style>
 HEAD;
-    }
-
-    public function script(): ?string
-    {
-        return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function id(): string
-    {
-        return 'bing';
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function isBooted(): bool
-    {
-        return $this->booted;
     }
 
     private function getBackgroundUri()
