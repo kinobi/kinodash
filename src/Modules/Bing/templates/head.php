@@ -1,7 +1,7 @@
 <style>
-    body,
-    html {
+    body, html {
         height: 100%;
+        overflow: visible;
     }
 
     html {
