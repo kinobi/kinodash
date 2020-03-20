@@ -7,12 +7,17 @@ namespace Kinodash\Modules\Bing;
 use Carbon\CarbonImmutable;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\Request;
+use GuzzleHttp\Psr7\Uri;
 use Kinodash\Modules\Module as KinodashModule;
 use League\Flysystem\Filesystem;
+use Psr\Http\Message\UriInterface;
 
 class Module implements KinodashModule
 {
     public const PATH = 'public/bing.jpg';
+    public const BING_BASE_URL = 'http://www.bing.com';
+
+    private bool $booted = false;
 
     private HttpClient $httpClient;
 
@@ -25,27 +30,33 @@ class Module implements KinodashModule
     }
 
     /**
-     * @todo error checks
+     * @param UriInterface $config
      * @see https://github.com/whizzzkid/bing-wallpapers-for-linux/blob/master/bingwallpaper
+     * @todo error checks
      */
-    public function boot(): void
+    public function boot(UriInterface $config): void
     {
-        $bing = 'http://www.bing.com';
-        $api = '/HPImageArchive.aspx?';
-        $format = '&format=js';
-        $day = '&idx=0';
-        $market = '&mkt=en-US';
-        $const = '&n=1';
+        parse_str($config->getQuery(), $configQuery);
+        $query = array_merge(
+            [
+                'format' => 'js',
+                'idx' => 0,
+                'mkt' => 'en-US',
+                'n' => 1,
+            ],
+            $configQuery
+        );
 
-        $request = new Request('GET', "{$bing}{$api}{$format}{$day}{$market}{$const}");
-
+        $apiUri = (new Uri(self::BING_BASE_URL . '/HPImageArchive.aspx'))->withQuery(http_build_query($query));
+        $request = new Request('GET', $apiUri);
         $response = $this->httpClient->send($request);
         $data = json_decode($response->getBody()->getContents(), false, 512, JSON_THROW_ON_ERROR);
 
-        $request = new Request('GET', $bing . $data->images[0]->url);
+        $request = new Request('GET', self::BING_BASE_URL . $data->images[0]->url);
         $response = $this->httpClient->send($request);
 
         $this->filesystem->put(self::PATH, $response->getBody()->getContents());
+        $this->booted = true;
     }
 
     public function head(): ?string
@@ -70,6 +81,22 @@ HEAD;
     public function script(): ?string
     {
         return null;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function id(): string
+    {
+        return 'bing';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function isBooted(): bool
+    {
+        return $this->booted;
     }
 
     private function getBackgroundUri()

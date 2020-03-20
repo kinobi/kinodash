@@ -7,7 +7,7 @@ use DI\ContainerBuilder;
 use GuzzleHttp\Client as HttpClient;
 use Kinodash\App\Controllers\DashboardController;
 use Kinodash\Modules\Bing\Module as ModuleBing;
-use Kinodash\Modules\Collection as ModuleCollection;
+use Kinodash\Modules\ModuleCollection;
 use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
 use League\Plates\Engine as Plates;
