@@ -10,7 +10,12 @@ interface Module
     public function boot(UriInterface $config, View $view): void;
 
     /**
-     * Return a list of HTML tags for the Module runtime
+     * Return a view model to place in the body center column
+     */
+    public function center(): ?ModuleView;
+
+    /**
+     * Return a view model to place in the HTML head
      */
     public function head(): ?ModuleView;
 

@@ -19,9 +19,11 @@
     <div class="columns is-vcentered">
         <div class="column"></div>
         <div class="column">
-            <h1 class="title has-text-centered">
-                Hello World
-            </h1>
+            <?php foreach ($modules as $module): ?>
+                <?php if ($center = $module->center()): ?>
+                    <?= $this->fetch($module->id() . '::' . $center->template(), $center->data()) ?>
+                <?php endif ?>
+            <?php endforeach ?>
         </div>
         <div class="column"></div>
     </div>

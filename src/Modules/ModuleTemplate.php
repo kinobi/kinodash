@@ -6,6 +6,16 @@ namespace Kinodash\Modules;
 
 trait ModuleTemplate
 {
+    private bool $booted = false;
+
+    /**
+     * @inheritDoc
+     */
+    public function center(): ?ModuleView
+    {
+        return null;
+    }
+
     /**
      * @inheritDoc
      */
