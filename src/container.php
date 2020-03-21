@@ -14,12 +14,15 @@ use League\Flysystem\AwsS3v3\AwsS3Adapter;
 use League\Flysystem\Filesystem;
 use League\Plates\Engine as Plates;
 use Psr\Container\ContainerInterface;
+use Symfony\Component\Cache\Adapter\RedisAdapter;
+use Symfony\Contracts\Cache\CacheInterface;
 
 use function DI\env;
 
 $builder = new ContainerBuilder();
 
 $settings = [
+    'cache.redis' => env('REDIS_URL'),
     'storage.s3' => [
         'client' => [
             'credentials' => [
@@ -34,6 +37,10 @@ $settings = [
 ];
 
 $infra = [
+    CacheInterface::class => static function (ContainerInterface $c) {
+        return new RedisAdapter(RedisAdapter::createConnection($c->get('cache.redis')));
+    },
+
     HttpClient::class => static function (ContainerInterface $c) {
         return new GuzzleHttp\Client();
     },
@@ -53,7 +60,7 @@ $infra = [
 
 $modules = [
     BingModule::class => static function (ContainerInterface $c) {
-        return new BingModule($c->get(HttpClient::class), $c->get(Filesystem::class));
+        return new BingModule($c->get(HttpClient::class), $c->get(CacheInterface::class));
     },
 
     ModuleCollection::class => static function (ContainerInterface $c) {

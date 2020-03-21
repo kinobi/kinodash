@@ -9,12 +9,13 @@ use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Kinodash\Dashboard\Spot;
-use Kinodash\Modules\Module;
 use Kinodash\Modules\Config;
+use Kinodash\Modules\Module;
 use Kinodash\Modules\ModuleTemplate;
 use Kinodash\Modules\ModuleView;
-use League\Flysystem\Filesystem;
-use Psr\Http\Message\UriInterface;
+use Symfony\Contracts\Cache\CacheInterface;
+use Symfony\Contracts\Cache\ItemInterface;
+
 
 /**
  * @see https://github.com/whizzzkid/bing-wallpapers-for-linux/blob/master/bingwallpaper
@@ -23,46 +24,51 @@ class BingModule implements Module
 {
     use ModuleTemplate;
 
-    public const PATH = 'public/bing.jpg';
     public const BING_BASE_URL = 'http://www.bing.com';
+    public const EXPIRATION_IN_MINUTES = 5;
 
     private string $id = 'bing';
 
+    private string $url;
+
     private HttpClient $httpClient;
 
-    private Filesystem $filesystem;
+    private CacheInterface $cache;
 
-    public function __construct(HttpClient $httpClient, Filesystem $filesystem)
+    public function __construct(HttpClient $httpClient, CacheInterface $cache)
     {
         $this->httpClient = $httpClient;
-        $this->filesystem = $filesystem;
+        $this->cache = $cache;
     }
 
     /**
-     * @param Config $config
-     * @todo error checks
+     * @inheritDoc
      */
     public function boot(Config $config): void
     {
-        $queryString = $this->createQueryString(
-            $config,
-            [
-                'format' => 'js',
-                'idx' => 0,
-                'mkt' => 'en-US',
-                'n' => 1,
-            ]
+        $this->url = $this->cache->get(
+            'bing.url',
+            function (ItemInterface $item) use ($config) {
+                $item->expiresAt(CarbonImmutable::now()->addRealMinutes(self::EXPIRATION_IN_MINUTES));
+                $queryString = $this->createQueryString(
+                    $config,
+                    [
+                        'format' => 'js',
+                        'idx' => random_int(0, 5),
+                        'mkt' => 'en-US',
+                        'n' => 1,
+                    ]
+                );
+
+                $apiUri = (new Uri(self::BING_BASE_URL . '/HPImageArchive.aspx'))->withQuery($queryString);
+                $request = new Request('GET', $apiUri);
+                $response = $this->httpClient->send($request);
+                $data = json_decode($response->getBody()->getContents(), false, 512, JSON_THROW_ON_ERROR);
+
+                return self::BING_BASE_URL . $data->images[0]->url;
+            }
         );
 
-        $apiUri = (new Uri(self::BING_BASE_URL . '/HPImageArchive.aspx'))->withQuery($queryString);
-        $request = new Request('GET', $apiUri);
-        $response = $this->httpClient->send($request);
-        $data = json_decode($response->getBody()->getContents(), false, 512, JSON_THROW_ON_ERROR);
-
-        $request = new Request('GET', self::BING_BASE_URL . $data->images[0]->url);
-        $response = $this->httpClient->send($request);
-
-        $this->filesystem->put(self::PATH, $response->getBody()->getContents());
         $this->booted = true;
     }
 
@@ -80,33 +86,10 @@ class BingModule implements Module
     public function view(Spot $spot): ?ModuleView
     {
         if ($spot->equals(Spot::HEAD())) {
-            return new ModuleView('head', ['url' => $this->getBackgroundUri()]);
+            return new ModuleView('head', ['url' => $this->url]);
         }
 
         return null;
-    }
-
-    private function getBackgroundUri(): UriInterface
-    {
-        $s3Adapter = $this->filesystem->getAdapter();
-        $s3Client = $s3Adapter->getClient();
-        $command = $s3Client->getCommand(
-            'GetObject',
-            array_merge(
-                [
-                    'Bucket' => $s3Adapter->getBucket(),
-                    'Key' => self::PATH,
-                ],
-                []
-            )
-        );
-
-        return $s3Client
-            ->createPresignedRequest(
-                $command,
-                CarbonImmutable::now()->addRealDay()
-            )
-            ->getUri();
     }
 
     private function createQueryString(Config $config, array $defaults = []): string

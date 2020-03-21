@@ -35,6 +35,7 @@
     "php-di/slim-bridge": "^3.0",
     "slim/http": "^1.0",
     "slim/slim": "^4.4",
+    "symfony/cache": "^5.0",
     "zeuxisoo/slim-whoops": "^0.7.2"
   },
   "require-dev": {
