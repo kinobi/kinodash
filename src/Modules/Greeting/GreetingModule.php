@@ -22,6 +22,8 @@ class GreetingModule implements Module
 
     private string $greetings;
 
+    private CarbonImmutable $now;
+
     public function boot(Config $config): void
     {
         $options = $config->getOptions();
@@ -31,12 +33,14 @@ class GreetingModule implements Module
             $options['greetings'] ?? []
         );
 
-        $timezone = new DateTimeZone($options['timezone'] ?? 'Europe/Paris');
+        $this->now = CarbonImmutable::now(new DateTimeZone($options['timezone'] ?? 'Europe/Paris'));
+
         $this->greetings = sprintf(
             '%s %s',
-            $greetings[$this->getPeriod(CarbonImmutable::now($timezone))],
+            $greetings[$this->getPeriod()],
             $options['who'] ?? self::WHO_FALLBACK
         );
+
         $this->booted = true;
     }
 
@@ -46,7 +50,18 @@ class GreetingModule implements Module
     public function view(Spot $spot): ?ModuleView
     {
         if ($spot->equals(Spot::MIDDLE_CENTER())) {
-            return new ModuleView('center', ['greetings' => $this->greetings]);
+            return new ModuleView(
+                'center',
+                [
+                    'greetings' => $this->greetings,
+                    'hours' => $this->now->format('H'),
+                    'minutes' => $this->now->format('i')
+                ]
+            );
+        }
+
+        if ($spot->equals(Spot::SCRIPT())) {
+            return new ModuleView('script', ['tz' => $this->now->timezone->getName()]);
         }
 
         return null;
@@ -60,9 +75,9 @@ class GreetingModule implements Module
         return __DIR__ . '/templates';
     }
 
-    private function getPeriod(CarbonImmutable $now): string
+    private function getPeriod(): string
     {
-        $hour = $now->hour;
+        $hour = $this->now->hour;
 
         if ($hour >= 22) {
             return 'night';

@@ -24,7 +24,7 @@ class BingModule implements Module
 {
     use ModuleTemplate;
 
-    public const BING_BASE_URL = 'http://www.bing.com';
+    public const BING_BASE_URL = 'https://www.bing.com';
     public const EXPIRATION_IN_MINUTES = 5;
 
     private string $id = 'bing';
