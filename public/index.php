@@ -5,6 +5,8 @@ declare(strict_types=1);
 use DI\Bridge\Slim\Bridge;
 use Kinodash\App\Controllers\DashboardController;
 use Kinodash\App\Controllers\ModuleController;
+use Slim\Error\Renderers\HtmlErrorRenderer;
+use Zeuxisoo\Whoops\Slim\WhoopsMiddleware;
 
 require __DIR__ . '/../vendor/autoload.php';
 
@@ -23,7 +25,13 @@ if (file_exists(__DIR__ . '/../.env')) {
 
 $app = Bridge::create(require __DIR__ . '/../src/container.php');
 
-$app->addErrorMiddleware(true, true, true);
+if ((bool)($_ENV['DEBUG'] ?? false)) {
+    $app->add(new WhoopsMiddleware(['enable' => true]));
+} else {
+    $errorMiddleware = $app->addErrorMiddleware(false, true, true);
+    $errorHandler = $errorMiddleware->getDefaultErrorHandler();
+    $errorHandler->registerErrorRenderer('text/html', HtmlErrorRenderer::class);
+}
 
 $app->any('/{moduleId:[a-z]+}[/{params:.*}]', ModuleController::class);
 
