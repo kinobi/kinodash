@@ -8,6 +8,7 @@ use Carbon\CarbonImmutable;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
+use Kinodash\Dashboard\Spot;
 use Kinodash\Modules\Module;
 use Kinodash\Modules\ModuleTemplate;
 use Kinodash\Modules\ModuleView;
@@ -62,17 +63,24 @@ class BingModule implements Module
         $this->booted = true;
     }
 
-    public function head(): ?ModuleView
-    {
-        return new ModuleView('head', ['url' => $this->getBackgroundUri()]);
-    }
-
     /**
      * @inheritDoc
      */
     public function templateFolder(): string
     {
         return __DIR__ . '/templates';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function view(Spot $spot): ?ModuleView
+    {
+        if ($spot->equals(Spot::HEAD())) {
+            return new ModuleView('head', ['url' => $this->getBackgroundUri()]);
+        }
+
+        return null;
     }
 
     private function getBackgroundUri(): UriInterface

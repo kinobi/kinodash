@@ -39,7 +39,7 @@ $infra = [
     },
 
     Plates::class => static function (ContainerInterface $c) {
-        return new Plates(__DIR__ . '/../templates');
+        return new Plates(__DIR__ . '/Dashboard/templates');
     },
 
     Filesystem::class => static function (ContainerInterface $c) {

@@ -20,7 +20,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Kinodash\\": "tests/"
+      "Kinodash\\Tests\\": "tests/"
     }
   },
   "require": {

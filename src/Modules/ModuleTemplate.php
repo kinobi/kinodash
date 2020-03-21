@@ -19,22 +19,6 @@ trait ModuleTemplate
     /**
      * @inheritDoc
      */
-    public function center(): ?ModuleView
-    {
-        return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function head(): ?ModuleView
-    {
-        return null;
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function id(): string
     {
         return $this->id;
@@ -46,13 +30,5 @@ trait ModuleTemplate
     public function isBooted(): bool
     {
         return $this->booted;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function script(): ?ModuleView
-    {
-        return null;
     }
 }

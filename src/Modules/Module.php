@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Kinodash\Modules;
 
+use Kinodash\Dashboard\Spot;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
@@ -29,16 +30,6 @@ interface Module
     public function boot(UriInterface $config): void;
 
     /**
-     * Return a view model to place in the body center column
-     */
-    public function center(): ?ModuleView;
-
-    /**
-     * Return a view model to place in the HTML head
-     */
-    public function head(): ?ModuleView;
-
-    /**
      * Return the Module id
      */
     public function id(): string;
@@ -49,12 +40,15 @@ interface Module
     public function isBooted(): bool;
 
     /**
-     * Return a list of script for the Module runtime
-     */
-    public function script(): ?ModuleView;
-
-    /**
      * Return the path to Module templates
      */
     public function templateFolder(): string;
+
+    /**
+     * Return a Module view model to place at this spot
+     *
+     * @param Spot $spot
+     * @return ModuleView|null
+     */
+    public function view(Spot $spot): ?ModuleView;
 }

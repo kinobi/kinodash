@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Kinodash\Modules\Greeting;
 
+use Kinodash\Dashboard\Spot;
 use Kinodash\Modules\Module;
 use Kinodash\Modules\ModuleTemplate;
 use Kinodash\Modules\ModuleView;
@@ -28,9 +29,16 @@ class GreetingModule implements Module
         $this->booted = true;
     }
 
-    public function center(): ?ModuleView
+    /**
+     * @inheritDoc
+     */
+    public function view(Spot $spot): ?ModuleView
     {
-        return new ModuleView('center', ['who' => $this->who]);
+        if ($spot->equals(Spot::MIDDLE_CENTER())) {
+            return new ModuleView('center', ['who' => $this->who]);
+        }
+
+        return null;
     }
 
     /**
