@@ -24,8 +24,7 @@ if (file_exists(__DIR__ . '/../.env')) {
 }
 
 $app = Bridge::create(require __DIR__ . '/../src/container.php');
-
-if ((bool)($_ENV['DEBUG'] ?? false)) {
+if ($_ENV['DEBUG'] === 'true') {
     $app->add(new WhoopsMiddleware(['enable' => true]));
 } else {
     $errorMiddleware = $app->addErrorMiddleware(false, true, true);

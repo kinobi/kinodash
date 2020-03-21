@@ -39,7 +39,7 @@ final class Config
      */
     public function getOptions(): array
     {
-        parse_str($this->params['query'], $configQuery);
+        parse_str($this->params['query'] ?? '', $configQuery);
 
         return $configQuery ?? [];
     }
