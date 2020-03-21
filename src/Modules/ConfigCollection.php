@@ -7,6 +7,7 @@ namespace Kinodash\Modules;
 use ArrayIterator;
 use IteratorAggregate;
 use Psr\Http\Message\ServerRequestInterface;
+use RuntimeException;
 
 final class ConfigCollection implements IteratorAggregate
 {
@@ -26,7 +27,11 @@ final class ConfigCollection implements IteratorAggregate
         $configString =
             $request->getQueryParams()[self::QUERY_CONFIG_KEY] ??
             $request->getServerParams()[self::ENV_CONFIG_KEY] ??
-            '';
+            null;
+
+        if (empty($configString)) {
+            throw new RuntimeException('No Module configured');
+        }
 
         $configs = explode(self::CONFIG_DELIMITER, $configString);
         $configs = array_map(fn(string $config) => Config::fromString($config), $configs);
