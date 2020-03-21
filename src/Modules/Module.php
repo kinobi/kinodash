@@ -1,11 +1,31 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kinodash\Modules;
 
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 
 interface Module
 {
+    /**
+     * Forward HTTP call to the Module
+     *
+     * @param RequestInterface $request
+     * @param ResponseInterface $response
+     * @param array $params
+     *
+     * @return ResponseInterface
+     */
+    public function api(RequestInterface $request, ResponseInterface $response, array $params): ResponseInterface;
+
+    /**
+     * Boot the Module
+     *
+     * @param UriInterface $config
+     */
     public function boot(UriInterface $config): void;
 
     /**

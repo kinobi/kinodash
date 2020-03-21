@@ -8,6 +8,8 @@ use ArrayIterator;
 use Exception;
 use IteratorAggregate;
 use League\Plates\Engine as View;
+use Psr\Http\Message\RequestInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\UriInterface;
 
 class ModuleCollection implements IteratorAggregate
@@ -20,6 +22,18 @@ class ModuleCollection implements IteratorAggregate
     public function __construct(Module ...$modules)
     {
         $this->modules = $modules;
+    }
+
+    public function api(RequestInterface $request, ResponseInterface $response, string $moduleId, array $params): ResponseInterface
+    {
+        $moduleList = $this->registerModules();
+
+        $key = $moduleList[$moduleId] ?? null;
+        if ($key === null) { // No module registered with this id
+            return $response->withStatus(404);
+        }
+
+        return $this->modules[$key]->api($request, $response, $params);
     }
 
     /**

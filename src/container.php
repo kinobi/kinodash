@@ -6,6 +6,7 @@ use Aws\S3\S3Client;
 use DI\ContainerBuilder;
 use GuzzleHttp\Client as HttpClient;
 use Kinodash\App\Controllers\DashboardController;
+use Kinodash\App\Controllers\ModuleController;
 use Kinodash\Modules\Bing\BingModule;
 use Kinodash\Modules\Greeting\GreetingModule;
 use Kinodash\Modules\ModuleCollection;
@@ -36,9 +37,11 @@ $infra = [
     HttpClient::class => static function (ContainerInterface $c) {
         return new GuzzleHttp\Client();
     },
+
     Plates::class => static function (ContainerInterface $c) {
         return new Plates(__DIR__ . '/../templates');
     },
+
     Filesystem::class => static function (ContainerInterface $c) {
         $client = new S3Client($c->get('storage.s3')['client']);
 
@@ -51,18 +54,26 @@ $infra = [
 $modules = [
     BingModule::class => static function (ContainerInterface $c) {
         return new BingModule($c->get(HttpClient::class), $c->get(Filesystem::class));
-    }
-];
+    },
 
-$controllers = [
-    DashboardController::class => static function (ContainerInterface $c) {
+    ModuleCollection::class => static function (ContainerInterface $c) {
         $modules = [
             new GreetingModule(),
             $c->get(BingModule::class),
         ];
 
-        return new DashboardController($c->get(Plates::class), new ModuleCollection(...$modules));
+        return new ModuleCollection(...$modules);
+    }
+];
+
+$controllers = [
+    DashboardController::class => static function (ContainerInterface $c) {
+        return new DashboardController($c->get(Plates::class), $c->get(ModuleCollection::class));
     },
+
+    ModuleController::class => static function (ContainerInterface $c) {
+        return new ModuleController($c->get(ModuleCollection::class));
+    }
 ];
 
 $builder->addDefinitions(
