@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Kinodash\App\Controllers;
 
 use Kinodash\Modules\ModuleCollection;
-use Kinodash\Modules\ModuleConfiguration;
+use Kinodash\Modules\ConfigCollection;
 use League\Plates\Engine as View;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -24,7 +24,7 @@ class DashboardController
 
     public function __invoke(Request $request, Response $response): Response
     {
-        $this->modules->boot(ModuleConfiguration::fromRequest($request), $this->view);
+        $this->modules->boot(ConfigCollection::fromRequest($request), $this->view);
 
         $response->getBody()->write(
             $this->view->render('dashboard', ['modules' => $this->modules->filterBooted()])

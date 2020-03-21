@@ -10,11 +10,15 @@ use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Kinodash\Dashboard\Spot;
 use Kinodash\Modules\Module;
+use Kinodash\Modules\Config;
 use Kinodash\Modules\ModuleTemplate;
 use Kinodash\Modules\ModuleView;
 use League\Flysystem\Filesystem;
 use Psr\Http\Message\UriInterface;
 
+/**
+ * @see https://github.com/whizzzkid/bing-wallpapers-for-linux/blob/master/bingwallpaper
+ */
 class BingModule implements Module
 {
     use ModuleTemplate;
@@ -35,11 +39,10 @@ class BingModule implements Module
     }
 
     /**
-     * @param UriInterface $config
-     * @see https://github.com/whizzzkid/bing-wallpapers-for-linux/blob/master/bingwallpaper
+     * @param Config $config
      * @todo error checks
      */
-    public function boot(UriInterface $config): void
+    public function boot(Config $config): void
     {
         $queryString = $this->createQueryString(
             $config,
@@ -106,14 +109,12 @@ class BingModule implements Module
             ->getUri();
     }
 
-    private function createQueryString(UriInterface $config, array $defaults = []): string
+    private function createQueryString(Config $config, array $defaults = []): string
     {
-        parse_str($config->getQuery(), $configQuery);
-
         return http_build_query(
             array_merge(
                 $defaults,
-                $configQuery
+                $config->getOptions()
             )
         );
     }

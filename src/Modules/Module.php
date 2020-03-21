@@ -7,7 +7,6 @@ namespace Kinodash\Modules;
 use Kinodash\Dashboard\Spot;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\UriInterface;
 
 interface Module
 {
@@ -25,9 +24,9 @@ interface Module
     /**
      * Boot the Module
      *
-     * @param UriInterface $config
+     * @param Config $config
      */
-    public function boot(UriInterface $config): void;
+    public function boot(Config $config): void;
 
     /**
      * Return the Module id

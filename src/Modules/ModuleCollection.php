@@ -10,7 +10,6 @@ use IteratorAggregate;
 use League\Plates\Engine as View;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use Psr\Http\Message\UriInterface;
 
 class ModuleCollection implements IteratorAggregate
 {
@@ -24,8 +23,12 @@ class ModuleCollection implements IteratorAggregate
         $this->modules = $modules;
     }
 
-    public function api(RequestInterface $request, ResponseInterface $response, string $moduleId, array $params): ResponseInterface
-    {
+    public function api(
+        RequestInterface $request,
+        ResponseInterface $response,
+        string $moduleId,
+        array $params
+    ): ResponseInterface {
         $moduleList = $this->registerModules();
 
         $key = $moduleList[$moduleId] ?? null;
@@ -39,16 +42,16 @@ class ModuleCollection implements IteratorAggregate
     /**
      * Boot modules in config
      *
-     * @param ModuleConfiguration $configs
+     * @param ConfigCollection $configs
      * @param View $view
      */
-    public function boot(ModuleConfiguration $configs, View $view): void
+    public function boot(ConfigCollection $configs, View $view): void
     {
         $moduleList = $this->registerModules();
 
-        /** @var UriInterface $config */
+        /** @var Config $config */
         foreach ($configs as $config) {
-            $key = $moduleList[$config->getScheme()] ?? null;
+            $key = $moduleList[$config->getModuleId()] ?? null;
             if ($key === null) { // No module registered for this config
                 continue;
             }

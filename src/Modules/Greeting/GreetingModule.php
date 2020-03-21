@@ -6,9 +6,9 @@ namespace Kinodash\Modules\Greeting;
 
 use Kinodash\Dashboard\Spot;
 use Kinodash\Modules\Module;
+use Kinodash\Modules\Config;
 use Kinodash\Modules\ModuleTemplate;
 use Kinodash\Modules\ModuleView;
-use Psr\Http\Message\UriInterface;
 
 class GreetingModule implements Module
 {
@@ -20,9 +20,9 @@ class GreetingModule implements Module
 
     private string $who;
 
-    public function boot(UriInterface $config): void
+    public function boot(Config $config): void
     {
-        parse_str($config->getQuery(), $configQuery);
+        $configQuery = $config->getOptions();
 
         $this->who = $configQuery['who'] ?? self::WHO_FALLBACK;
 

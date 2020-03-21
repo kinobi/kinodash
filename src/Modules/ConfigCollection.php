@@ -5,28 +5,31 @@ declare(strict_types=1);
 namespace Kinodash\Modules;
 
 use ArrayIterator;
-use GuzzleHttp\Psr7\Uri;
 use IteratorAggregate;
 use Psr\Http\Message\ServerRequestInterface;
-use Psr\Http\Message\UriInterface;
 
-final class ModuleConfiguration implements IteratorAggregate
+final class ConfigCollection implements IteratorAggregate
 {
     public const CONFIG_DELIMITER = ';';
+    public const ENV_CONFIG_KEY = 'KINODASH_MODULE_CONFIGS';
+    public const QUERY_CONFIG_KEY = 'config';
 
     private array $configs;
 
-    public function __construct(UriInterface ...$configs)
+    public function __construct(Config ...$configs)
     {
         $this->configs = $configs;
     }
 
     public static function fromRequest(ServerRequestInterface $request): self
     {
-        $configString = $request->getQueryParams()['config'] ?? $request->getServerParams()['KINODASH_MODULE_CONFIGS'];
+        $configString =
+            $request->getQueryParams()[self::QUERY_CONFIG_KEY] ??
+            $request->getServerParams()[self::ENV_CONFIG_KEY] ??
+            '';
 
         $configs = explode(self::CONFIG_DELIMITER, $configString);
-        $configs = array_map(fn(string $config) => new Uri($config), $configs);
+        $configs = array_map(fn(string $config) => Config::fromString($config), $configs);
 
         return new self(...$configs);
     }
