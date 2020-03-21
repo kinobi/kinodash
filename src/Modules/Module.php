@@ -2,12 +2,11 @@
 
 namespace Kinodash\Modules;
 
-use League\Plates\Engine as View;
 use Psr\Http\Message\UriInterface;
 
 interface Module
 {
-    public function boot(UriInterface $config, View $view): void;
+    public function boot(UriInterface $config): void;
 
     /**
      * Return a view model to place in the body center column
@@ -33,4 +32,9 @@ interface Module
      * Return a list of script for the Module runtime
      */
     public function script(): ?ModuleView;
+
+    /**
+     * Return the path to Module templates
+     */
+    public function templateFolder(): string;
 }

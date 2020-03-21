@@ -7,7 +7,6 @@ namespace Kinodash\Modules\Greeting;
 use Kinodash\Modules\Module;
 use Kinodash\Modules\ModuleTemplate;
 use Kinodash\Modules\ModuleView;
-use League\Plates\Engine as View;
 use Psr\Http\Message\UriInterface;
 
 class GreetingModule implements Module
@@ -20,18 +19,25 @@ class GreetingModule implements Module
 
     private string $who;
 
-    public function boot(UriInterface $config, View $view): void
+    public function boot(UriInterface $config): void
     {
         parse_str($config->getQuery(), $configQuery);
 
         $this->who = $configQuery['who'] ?? self::WHO_FALLBACK;
 
-        $view->addFolder($this->id, __DIR__ . '/templates');
         $this->booted = true;
     }
 
     public function center(): ?ModuleView
     {
         return new ModuleView('center', ['who' => $this->who]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function templateFolder(): string
+    {
+        return __DIR__ . '/templates';
     }
 }

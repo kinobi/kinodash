@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kinodash\Modules;
 
 use ArrayIterator;
+use Exception;
 use IteratorAggregate;
 use League\Plates\Engine as View;
 use Psr\Http\Message\UriInterface;
@@ -38,7 +39,12 @@ class ModuleCollection implements IteratorAggregate
                 continue;
             }
 
-            $this->modules[$key]->boot($config, $view);
+            try {
+                $module = $this->modules[$key];
+                $module->boot($config);
+                $view->addFolder($module->id(), $module->templateFolder());
+            } catch (Exception $e) {
+            }
         }
     }
 

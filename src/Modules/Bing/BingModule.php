@@ -12,7 +12,6 @@ use Kinodash\Modules\Module;
 use Kinodash\Modules\ModuleTemplate;
 use Kinodash\Modules\ModuleView;
 use League\Flysystem\Filesystem;
-use League\Plates\Engine as View;
 use Psr\Http\Message\UriInterface;
 
 class BingModule implements Module
@@ -36,14 +35,11 @@ class BingModule implements Module
 
     /**
      * @param UriInterface $config
-     * @param View $view
      * @see https://github.com/whizzzkid/bing-wallpapers-for-linux/blob/master/bingwallpaper
      * @todo error checks
      */
-    public function boot(UriInterface $config, View $view): void
+    public function boot(UriInterface $config): void
     {
-        $view->addFolder($this->id, __DIR__ . '/templates');
-
         $queryString = $this->createQueryString(
             $config,
             [
@@ -69,6 +65,14 @@ class BingModule implements Module
     public function head(): ?ModuleView
     {
         return new ModuleView('head', ['url' => $this->getBackgroundUri()]);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function templateFolder(): string
+    {
+        return __DIR__ . '/templates';
     }
 
     private function getBackgroundUri(): UriInterface
