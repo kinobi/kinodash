@@ -7,6 +7,7 @@ namespace Kinodash\Dashboard;
 final class Spot
 {
     private const HEAD = 'head';
+    private const TOP_LEFT = 'body_top_left';
     private const MIDDLE_CENTER = 'body_middle_center';
     private const SCRIPT = 'script';
 
@@ -25,6 +26,11 @@ final class Spot
     public function equals(Spot $other): bool
     {
         return $this->value === $other->value;
+    }
+
+    public static function TOP_LEFT(): self
+    {
+        return new self(self::TOP_LEFT);
     }
 
     public static function MIDDLE_CENTER(): self

@@ -32,7 +32,7 @@ if ($_ENV['DEBUG'] === 'true') {
     $errorHandler->registerErrorRenderer('text/html', HtmlErrorRenderer::class);
 }
 
-$app->any('/{moduleId:[a-z]+}[/{params:.*}]', ModuleController::class);
+$app->any('/{moduleId:[a-z0-9]+}[/{params:.*}]', ModuleController::class);
 
 $app->get('/', DashboardController::class);
 

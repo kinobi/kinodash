@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Kinodash\Modules\Greeting;
 
+use Auth0\SDK\Auth0;
 use Carbon\CarbonImmutable;
 use DateTimeZone;
 use Kinodash\Dashboard\Spot;
@@ -16,16 +17,26 @@ class GreetingModule implements Module
 {
     use ModuleTemplate;
 
-    public const WHO_FALLBACK = 'Kinodash';
-
     private string $id = 'greeting';
 
     private string $greetings;
 
     private CarbonImmutable $now;
 
+    private Auth0 $auth0;
+
+    public function __construct(Auth0 $auth0)
+    {
+        $this->auth0 = $auth0;
+    }
+
     public function boot(Config $config): void
     {
+        $user = $this->auth0->getUser();
+        if(!$user) {
+            return;
+        }
+
         $options = $config->getOptions();
 
         $greetings = array_merge(
@@ -38,7 +49,7 @@ class GreetingModule implements Module
         $this->greetings = sprintf(
             '%s %s',
             $greetings[$this->getPeriod()],
-            $options['who'] ?? self::WHO_FALLBACK
+            $user['name']
         );
 
         $this->booted = true;
@@ -70,7 +81,7 @@ class GreetingModule implements Module
     /**
      * @inheritDoc
      */
-    public function templateFolder(): string
+    public function templateFolder(): ?string
     {
         return __DIR__ . '/templates';
     }

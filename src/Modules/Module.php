@@ -41,7 +41,7 @@ interface Module
     /**
      * Return the path to Module templates
      */
-    public function templateFolder(): string;
+    public function templateFolder(): ?string;
 
     /**
      * Return a Module view model to place at this spot

@@ -59,7 +59,9 @@ class ModuleCollection implements IteratorAggregate
             try {
                 $module = $this->modules[$key];
                 $module->boot($config);
-                $view->addFolder($module->id(), $module->templateFolder());
+                if ($folder = $module->templateFolder()) {
+                    $view->addFolder($module->id(), $folder);
+                }
             } catch (Exception $e) {
             }
         }

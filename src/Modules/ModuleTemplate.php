@@ -6,6 +6,7 @@ namespace Kinodash\Modules;
 
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 
 trait ModuleTemplate
 {
@@ -21,6 +22,10 @@ trait ModuleTemplate
      */
     public function id(): string
     {
+        if (empty($this->id)) {
+            throw new RuntimeException(sprintf('Missing id in Module "%s"', __CLASS__));
+        }
+
         return $this->id;
     }
 
@@ -30,5 +35,14 @@ trait ModuleTemplate
     public function isBooted(): bool
     {
         return $this->booted;
+    }
+
+    /**
+     *
+     * @inheritDoc
+     */
+    public function templateFolder(): ?string
+    {
+        return null;
     }
 }

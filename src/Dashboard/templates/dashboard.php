@@ -18,22 +18,35 @@
 </head>
 <body>
 <section class="section">
-    <div class="container">
-        <div class="columns is-vcentered">
-            <div class="column"></div>
-            <div class="column is-half">
-                <div class="kinodash-modules">
-                    <?php foreach ($modules as $module): ?>
-                        <?php if ($middleCenter = $module->view(Spot::MIDDLE_CENTER())): ?>
-                            <?= $this->fetch($module->id() . '::' . $middleCenter->template(), $middleCenter->data()) ?>
-                        <?php endif ?>
-                    <?php endforeach ?>
-                </div>
+    <div class="columns">
+        <div class="column">
+            <div class="kinodash-modules">
+                <?php foreach ($modules as $module): ?>
+                    <?php if ($topLeft = $module->view(Spot::TOP_LEFT())): ?>
+                        <?= $this->fetch($module->id() . '::' . $topLeft->template(), $topLeft->data()) ?>
+                    <?php endif ?>
+                <?php endforeach ?>
             </div>
-            <div class="column"></div>
         </div>
+        <div class="column is-half"></div>
+        <div class="column"></div>
+    </div>
+
+    <div class="columns is-vcentered">
+        <div class="column"></div>
+        <div class="column is-half">
+            <div class="kinodash-modules">
+                <?php foreach ($modules as $module): ?>
+                    <?php if ($middleCenter = $module->view(Spot::MIDDLE_CENTER())): ?>
+                        <?= $this->fetch($module->id() . '::' . $middleCenter->template(), $middleCenter->data()) ?>
+                    <?php endif ?>
+                <?php endforeach ?>
+            </div>
+        </div>
+        <div class="column"></div>
     </div>
 </section>
+
 <?php foreach ($modules as $module): ?>
     <?php if ($script = $module->view(Spot::SCRIPT())): ?>
         <?= $this->fetch($module->id() . '::' . $script->template(), $script->data()) ?>

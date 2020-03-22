@@ -67,7 +67,7 @@ class BingModule implements Module
     /**
      * @inheritDoc
      */
-    public function templateFolder(): string
+    public function templateFolder(): ?string
     {
         return __DIR__ . '/templates';
     }

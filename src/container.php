@@ -2,11 +2,14 @@
 
 declare(strict_types=1);
 
+use Auth0\SDK\Auth0;
 use Aws\S3\S3Client;
 use DI\ContainerBuilder;
 use GuzzleHttp\Client as HttpClient;
+use GuzzleHttp\Psr7\Uri;
 use Kinodash\App\Controllers\DashboardController;
 use Kinodash\App\Controllers\ModuleController;
+use Kinodash\Modules\Auth0\Auth0Module;
 use Kinodash\Modules\Bing\BingModule;
 use Kinodash\Modules\Greeting\GreetingModule;
 use Kinodash\Modules\ModuleCollection;
@@ -22,6 +25,13 @@ use function DI\env;
 $builder = new ContainerBuilder();
 
 $settings = [
+    'auth.auth0' => [
+        'domain' => env('AUTH0_DOMAIN'),
+        'client_id' => env('AUTH0_CLIENT_ID'),
+        'client_secret' => env('AUTH0_CLIENT_SECRET'),
+        'redirect_uri' => env('AUTH0_CALLBACK_URL'),
+        'scope' => 'openid profile email',
+    ],
     'cache.redis' => env('REDIS_URL'),
     'storage.s3' => [
         'client' => [
@@ -37,6 +47,10 @@ $settings = [
 ];
 
 $infra = [
+    Auth0::class => static function (ContainerInterface $c) {
+        return new Auth0($c->get('auth.auth0'));
+    },
+
     CacheInterface::class => static function (ContainerInterface $c) {
         return new RedisAdapter(RedisAdapter::createConnection($c->get('cache.redis')));
     },
@@ -63,9 +77,18 @@ $modules = [
         return new BingModule($c->get(HttpClient::class), $c->get(CacheInterface::class));
     },
 
+    Auth0Module::class => static function (ContainerInterface $c) {
+        return new Auth0Module($c->get(Auth0::class), new Uri($c->get('auth.auth0')['redirect_uri']));
+    },
+
+    GreetingModule::class => static function (ContainerInterface $c) {
+        return new GreetingModule($c->get(Auth0::class));
+    },
+
     ModuleCollection::class => static function (ContainerInterface $c) {
         $modules = [
-            new GreetingModule(),
+            $c->get(Auth0Module::class),
+            $c->get(GreetingModule::class),
             $c->get(BingModule::class),
         ];
 
