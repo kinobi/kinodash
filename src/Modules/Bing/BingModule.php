@@ -50,16 +50,8 @@ class BingModule implements Module
             'bing.url',
             function (ItemInterface $item) use ($config) {
                 $item->expiresAt(CarbonImmutable::now()->addRealMinutes(self::EXPIRATION_IN_MINUTES));
-                $queryString = $this->createQueryString(
-                    $config,
-                    [
-                        'format' => 'js',
-                        'idx' => random_int(0, 5),
-                        'mkt' => 'en-US',
-                        'n' => 1,
-                    ]
-                );
 
+                $queryString = $this->createQueryString($config);
                 $apiUri = (new Uri(self::BING_BASE_URL . '/HPImageArchive.aspx'))->withQuery($queryString);
                 $request = new Request('GET', $apiUri);
                 $response = $this->httpClient->send($request);
@@ -92,12 +84,19 @@ class BingModule implements Module
         return null;
     }
 
-    private function createQueryString(Config $config, array $defaults = []): string
+    private function createQueryString(Config $config): string
     {
         return http_build_query(
             array_merge(
-                $defaults,
-                $config->getOptions()
+                [
+                    'idx' => random_int(0, 5),
+                    'mkt' => 'en-US',
+                ],
+                $config->getOptions(),
+                [
+                    'format' => 'js',
+                    'n' => 1,
+                ],
             )
         );
     }
