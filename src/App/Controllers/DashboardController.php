@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace Kinodash\App\Controllers;
 
-use Kinodash\Modules\ModuleCollection;
 use Kinodash\Modules\ConfigCollection;
+use Kinodash\Modules\ModuleCollection;
 use League\Plates\Engine as View;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
+use Psr\Http\Message\ServerRequestInterface as Request;
+use WyriHaximus\HtmlCompress\Factory as HtmlCompressor;
 
 class DashboardController
 {
@@ -26,10 +27,21 @@ class DashboardController
     {
         $this->modules->boot(ConfigCollection::fromRequest($request), $this->view);
 
-        $response->getBody()->write(
-            $this->view->render('dashboard', ['modules' => $this->modules->filterBooted()])
-        );
+        $payload = $this->createPayload();
+
+        $response->getBody()->write($payload);
 
         return $response;
+    }
+
+    private function createPayload(): string
+    {
+        $payload = $this->view->render('dashboard', ['modules' => $this->modules->filterBooted()]);
+        if ($_ENV['DEBUG'] !== 'true') {
+            $parser = HtmlCompressor::construct();
+            $payload = $parser->compress($payload);
+        }
+
+        return $payload;
     }
 }
