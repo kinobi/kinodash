@@ -13,7 +13,6 @@ final class ConfigCollection implements IteratorAggregate
 {
     public const CONFIG_DELIMITER = ';';
     public const ENV_CONFIG_KEY = 'KINODASH_MODULE_CONFIGS';
-    public const QUERY_CONFIG_KEY = 'config';
 
     private array $configs;
 
@@ -24,10 +23,7 @@ final class ConfigCollection implements IteratorAggregate
 
     public static function fromRequest(ServerRequestInterface $request): self
     {
-        $configString =
-            $request->getQueryParams()[self::QUERY_CONFIG_KEY] ??
-            $request->getServerParams()[self::ENV_CONFIG_KEY] ??
-            null;
+        $configString = $request->getServerParams()[self::ENV_CONFIG_KEY] ?? '';
 
         if (empty($configString)) {
             throw new RuntimeException('No Module configured');
