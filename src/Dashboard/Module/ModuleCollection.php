@@ -2,14 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Kinodash\Modules;
+namespace Kinodash\Dashboard\Module;
 
 use ArrayIterator;
 use Exception;
 use IteratorAggregate;
 use League\Plates\Engine as View;
-use Psr\Http\Message\RequestInterface;
-use Psr\Http\Message\ResponseInterface;
+use RuntimeException;
 
 class ModuleCollection implements IteratorAggregate
 {
@@ -23,27 +22,12 @@ class ModuleCollection implements IteratorAggregate
         $this->modules = $modules;
     }
 
-    public function api(
-        RequestInterface $request,
-        ResponseInterface $response,
-        string $moduleId,
-        array $params
-    ): ResponseInterface {
-        $moduleList = $this->registerModules();
-
-        $key = $moduleList[$moduleId] ?? null;
-        if ($key === null) { // No module registered with this id
-            return $response->withStatus(404);
-        }
-
-        return $this->modules[$key]->api($request, $response, $params);
-    }
-
     /**
      * Boot modules in config
      *
      * @param ConfigCollection $configs
      * @param View $view
+     * @throws Exception
      */
     public function boot(ConfigCollection $configs, View $view): void
     {
@@ -63,6 +47,9 @@ class ModuleCollection implements IteratorAggregate
                     $view->addFolder($module->id(), $folder);
                 }
             } catch (Exception $e) {
+                if ($_ENV['DEBUG'] === 'true') {
+                    throw $e;
+                }
             }
         }
     }
@@ -75,6 +62,18 @@ class ModuleCollection implements IteratorAggregate
         return new self(
             ...array_filter($this->modules, fn(Module $module) => $module->isBooted())
         );
+    }
+
+    public function getById(string $moduleId): Module
+    {
+        $moduleList = $this->registerModules();
+
+        $key = $moduleList[$moduleId] ?? null;
+        if ($key === null) {
+            throw new RuntimeException(sprintf('No module registered with the id "%s"', $moduleId));
+        }
+
+        return $this->modules[$key];
     }
 
     /**
