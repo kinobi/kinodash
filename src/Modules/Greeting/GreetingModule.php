@@ -60,7 +60,7 @@ class GreetingModule implements Module
      */
     public function view(Spot $spot): ?ModuleView
     {
-        if ($spot->equals(Spot::MIDDLE_CENTER())) {
+        if ($spot->equals(Spot::BODY())) {
             return new ModuleView(
                 'center',
                 [

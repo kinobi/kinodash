@@ -81,7 +81,7 @@ class Auth0Module implements Module
      */
     public function view(Spot $spot): ?ModuleView
     {
-        if (!$spot->equals(Spot::TOP_LEFT())) {
+        if (!$spot->equals(Spot::BODY_HEAD())) {
             return null;
         }
 

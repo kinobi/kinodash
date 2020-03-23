@@ -17,36 +17,30 @@
     <?php endforeach ?>
 </head>
 <body>
-<section class="section">
-    <div class="columns">
-        <div class="column">
-            <div class="kinodash-modules">
-                <?php foreach ($modules as $module): ?>
-                    <?php if ($topLeft = $module->view(Spot::TOP_LEFT())): ?>
-                        <?= $this->fetch($module->id() . '::' . $topLeft->template(), $topLeft->data()) ?>
-                    <?php endif ?>
-                <?php endforeach ?>
-            </div>
+<section class="hero is-fullheight">
+    <div class="hero-head">
+        <div style="margin: 1em 1em 0;">
+            <?php foreach ($modules as $module): ?>
+                <?php if ($bodyHead = $module->view(Spot::BODY_HEAD())): ?>
+                    <?= $this->fetch($module->id() . '::' . $bodyHead->template(), $bodyHead->data()) ?>
+                <?php endif ?>
+            <?php endforeach ?>
         </div>
-        <div class="column is-half"></div>
-        <div class="column"></div>
     </div>
 
-    <div class="columns is-vcentered">
-        <div class="column"></div>
-        <div class="column is-half">
-            <div class="kinodash-modules">
-                <?php foreach ($modules as $module): ?>
-                    <?php if ($middleCenter = $module->view(Spot::MIDDLE_CENTER())): ?>
-                        <?= $this->fetch($module->id() . '::' . $middleCenter->template(), $middleCenter->data()) ?>
-                    <?php endif ?>
-                <?php endforeach ?>
-            </div>
+    <div class="hero-body">
+        <div class="container has-text-centered">
+            <?php foreach ($modules as $module): ?>
+                <?php if ($body = $module->view(Spot::BODY())): ?>
+                    <?= $this->fetch($module->id() . '::' . $body->template(), $body->data()) ?>
+                <?php endif ?>
+            <?php endforeach ?>
         </div>
-        <div class="column"></div>
+    </div>
+
+    <div class="hero-foot">
     </div>
 </section>
-
 <?php foreach ($modules as $module): ?>
     <?php if ($script = $module->view(Spot::SCRIPT())): ?>
         <?= $this->fetch($module->id() . '::' . $script->template(), $script->data()) ?>

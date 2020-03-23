@@ -7,8 +7,8 @@ namespace Kinodash\Dashboard;
 final class Spot
 {
     private const HEAD = 'head';
-    private const TOP_LEFT = 'body_top_left';
-    private const MIDDLE_CENTER = 'body_middle_center';
+    private const BODY_HEAD = 'body_head';
+    private const BODY = 'body';
     private const SCRIPT = 'script';
 
     private string $value;
@@ -28,14 +28,14 @@ final class Spot
         return $this->value === $other->value;
     }
 
-    public static function TOP_LEFT(): self
+    public static function BODY_HEAD(): self
     {
-        return new self(self::TOP_LEFT);
+        return new self(self::BODY_HEAD);
     }
 
-    public static function MIDDLE_CENTER(): self
+    public static function BODY(): self
     {
-        return new self(self::MIDDLE_CENTER);
+        return new self(self::BODY);
     }
 
     public static function HEAD(): self

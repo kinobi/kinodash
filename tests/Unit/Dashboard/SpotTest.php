@@ -14,13 +14,13 @@ class SpotTest extends TestCase
         $this->assertEquals($spot, Spot::HEAD());
         $this->assertNotEquals($spot, Spot::SCRIPT());
         $this->assertTrue($spot->equals(Spot::HEAD()));
-        $this->assertFalse($spot->equals(Spot::MIDDLE_CENTER()));
+        $this->assertFalse($spot->equals(Spot::BODY()));
     }
 
     public function test_it_can_be_used_as_array_key(): void
     {
-        $spotList = [(string)Spot::MIDDLE_CENTER() => 'test'];
+        $spotList = [(string)Spot::BODY() => 'test'];
 
-        $this->assertArrayHasKey((string)Spot::MIDDLE_CENTER(), $spotList);
+        $this->assertArrayHasKey((string)Spot::BODY(), $spotList);
     }
 }
