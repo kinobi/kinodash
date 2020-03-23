@@ -19,7 +19,7 @@
 <body>
 <section class="hero is-fullheight">
     <div class="hero-head">
-        <div style="margin: 1em 1em 0;">
+        <div class="kinodash-top">
             <?php foreach ($modules as $module): ?>
                 <?php if ($bodyHead = $module->view(Spot::BODY_HEAD())): ?>
                     <?= $this->fetch($module->id() . '::' . $bodyHead->template(), $bodyHead->data()) ?>
@@ -29,7 +29,7 @@
     </div>
 
     <div class="hero-body">
-        <div class="container has-text-centered">
+        <div class="container has-text-centered kinodash-body">
             <?php foreach ($modules as $module): ?>
                 <?php if ($body = $module->view(Spot::BODY())): ?>
                     <?= $this->fetch($module->id() . '::' . $body->template(), $body->data()) ?>

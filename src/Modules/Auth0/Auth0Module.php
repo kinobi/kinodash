@@ -86,9 +86,9 @@ class Auth0Module implements Module
         }
 
         if (!$this->auth0->getUser()) {
-            return new ModuleView('button', ['text' => 'Login', 'icon' => 'door-open','a' => '/auth0/login']);
+            return new ModuleView('button', ['text' => 'Login', 'icon' => 'door-open', 'a' => '/auth0/login']);
         }
 
-        return new ModuleView('button', ['text' => 'Logout', 'icon' => 'door-closed','a' => '/auth0/logout']);
+        return new ModuleView('button', ['text' => 'Logout', 'icon' => 'door-closed', 'a' => '/auth0/logout']);
     }
 }

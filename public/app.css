@@ -3,10 +3,14 @@ body, html {
     overflow: visible;
 }
 
-.section {
-    height: 100%;
+body {
+    background-color: #00000077;
 }
 
-.kinodash-modules {
-    position: relative;
+.kinodash-top {
+    margin: 1em 1em 0;
+}
+
+.kinodash-body {
+    text-shadow: rgba(0, 0, 0, 0.5) 0 2px 5px;
 }

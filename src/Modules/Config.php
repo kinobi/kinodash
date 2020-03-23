@@ -27,6 +27,14 @@ final class Config
     }
 
     /**
+     * Return host
+     */
+    public function getHost(): string
+    {
+        return $this->params['host'] ?? '';
+    }
+
+    /**
      * Return Module identifier
      */
     public function getModuleId(): string
@@ -43,4 +51,21 @@ final class Config
 
         return $configQuery ?? [];
     }
+
+    /**
+     * Return password
+     */
+    public function getPassword(): string
+    {
+        return $this->params['pass'] ?? '';
+    }
+
+    /**
+     * Return user
+     */
+    public function getUser(): string
+    {
+        return $this->params['user'] ?? '';
+    }
+
 }
