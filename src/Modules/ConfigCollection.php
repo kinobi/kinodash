@@ -13,6 +13,7 @@ final class ConfigCollection implements IteratorAggregate
 {
     public const CONFIG_DELIMITER = ';';
     public const ENV_CONFIG_KEY = 'KINODASH_MODULE_CONFIGS';
+    public const USER_MODULE_CONFIGS_KEY = 'http://kinodash/module_configs';
 
     private array $configs;
 
@@ -21,9 +22,11 @@ final class ConfigCollection implements IteratorAggregate
         $this->configs = $configs;
     }
 
-    public static function fromRequest(ServerRequestInterface $request): self
+    public static function lookup(?array $userData, ServerRequestInterface $request): self
     {
-        $configString = $request->getServerParams()[self::ENV_CONFIG_KEY] ?? '';
+        $configString = $userData[self::USER_MODULE_CONFIGS_KEY]
+            ?? $request->getServerParams()[self::ENV_CONFIG_KEY]
+            ?? '';
 
         if (empty($configString)) {
             throw new RuntimeException('No Module configured');

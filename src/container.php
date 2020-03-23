@@ -98,7 +98,7 @@ $modules = [
 
 $controllers = [
     DashboardController::class => static function (ContainerInterface $c) {
-        return new DashboardController($c->get(Plates::class), $c->get(ModuleCollection::class));
+        return new DashboardController($c->get(Plates::class), $c->get(ModuleCollection::class), $c->get(Auth0::class));
     },
 
     ModuleController::class => static function (ContainerInterface $c) {
