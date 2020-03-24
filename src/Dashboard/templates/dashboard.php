@@ -19,10 +19,12 @@
 <body>
 <section class="hero is-fullheight">
     <div class="hero-head">
-        <div class="kinodash-top">
+        <div class="kinodash-top columns">
             <?php foreach ($modules as $module): ?>
                 <?php if ($bodyHead = $module->view(Spot::BODY_HEAD())): ?>
-                    <?= $this->fetch($module->id() . '::' . $bodyHead->template(), $bodyHead->data()) ?>
+                    <div class="column is-vcentered">
+                        <?= $this->fetch($module->id() . '::' . $bodyHead->template(), $bodyHead->data()) ?>
+                    </div>
                 <?php endif ?>
             <?php endforeach ?>
         </div>
