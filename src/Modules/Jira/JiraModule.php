@@ -84,7 +84,7 @@ class JiraModule implements Module
         if ($id) {
             $start = CarbonImmutable::createFromFormat(CarbonImmutable::ATOM, $currentTaskStart->get());
             $stop = CarbonImmutable::now();
-            $duration = $stop->shortAbsoluteDiffForHumans($start);
+            $duration = $stop->shortAbsoluteDiffForHumans($start, 3);
             $task = $this->issues[$id]['key'] ?? '-';
             $summary = $this->issues[$id]['fields']['summary'] ?? 'Jira ID: ' . $id;
             $csvFilename = sprintf('/%s/%s/week_%s.csv', $this->id(), $stop->year, $stop->week);
