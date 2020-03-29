@@ -8,10 +8,10 @@ use Auth0\SDK\Auth0;
 use Carbon\CarbonImmutable;
 use DateTimeZone;
 use Kinodash\Dashboard\Spot;
-use Kinodash\Modules\Config;
-use Kinodash\Modules\Module;
-use Kinodash\Modules\ModuleTemplate;
-use Kinodash\Modules\ModuleView;
+use Kinodash\Dashboard\Module\Config;
+use Kinodash\Dashboard\Module\Module;
+use Kinodash\Dashboard\Module\ModuleTemplate;
+use Kinodash\Dashboard\Module\ModuleView;
 
 class GreetingModule implements Module
 {

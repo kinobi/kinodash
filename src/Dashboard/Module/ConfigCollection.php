@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Kinodash\Modules;
+namespace Kinodash\Dashboard\Module;
 
 use ArrayIterator;
 use IteratorAggregate;
@@ -36,6 +36,18 @@ final class ConfigCollection implements IteratorAggregate
         $configs = array_map(fn(string $config) => Config::fromString($config), $configs);
 
         return new self(...$configs);
+    }
+
+    public function getById(string $moduleId): Config
+    {
+        $map = array_flip(array_map(fn(Config $config) => $config->getModuleId(), $this->configs));
+
+        $key = $map[$moduleId] ?? null;
+        if ($key === null) {
+            throw new RuntimeException(sprintf('No config found for the module with id "%s"', $moduleId));
+        }
+
+        return $this->configs[$key];
     }
 
     /**

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Kinodash\Modules;
+namespace Kinodash\Dashboard\Module;
 
 class ModuleView
 {

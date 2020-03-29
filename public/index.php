@@ -23,7 +23,7 @@ if (file_exists(__DIR__ . '/../.env')) {
     $dotenv->load();
 }
 
-$app = Bridge::create(require __DIR__ . '/../src/container.php');
+$app = Bridge::create(require __DIR__ . '/../src/App/container.php');
 if ($_ENV['DEBUG'] === 'true') {
     $app->add(new WhoopsMiddleware(['enable' => true]));
 } else {

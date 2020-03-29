@@ -9,13 +9,12 @@ use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
 use Kinodash\Dashboard\Spot;
-use Kinodash\Modules\Config;
-use Kinodash\Modules\Module;
-use Kinodash\Modules\ModuleTemplate;
-use Kinodash\Modules\ModuleView;
+use Kinodash\Dashboard\Module\Config;
+use Kinodash\Dashboard\Module\Module;
+use Kinodash\Dashboard\Module\ModuleTemplate;
+use Kinodash\Dashboard\Module\ModuleView;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\Cache\ItemInterface;
-
 
 /**
  * @see https://github.com/whizzzkid/bing-wallpapers-for-linux/blob/master/bingwallpaper

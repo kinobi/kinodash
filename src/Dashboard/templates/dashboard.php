@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css">
     <link rel="stylesheet" href="/app.css">
     <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <?php foreach ($modules as $module): ?>
         <?php if ($headView = $module->view(Spot::HEAD())): ?>
             <?= $this->fetch($module->id() . '::' . $headView->template(), $headView->data()) ?>
@@ -19,17 +20,19 @@
 <body>
 <section class="hero is-fullheight">
     <div class="hero-head">
-        <div class="kinodash-top">
+        <div class="kinodash-top columns">
             <?php foreach ($modules as $module): ?>
                 <?php if ($bodyHead = $module->view(Spot::BODY_HEAD())): ?>
-                    <?= $this->fetch($module->id() . '::' . $bodyHead->template(), $bodyHead->data()) ?>
+                    <div class="column is-vcentered">
+                        <?= $this->fetch($module->id() . '::' . $bodyHead->template(), $bodyHead->data()) ?>
+                    </div>
                 <?php endif ?>
             <?php endforeach ?>
         </div>
     </div>
 
     <div class="hero-body">
-        <div class="container has-text-centered kinodash-body">
+        <div class="container has-text-centered">
             <?php foreach ($modules as $module): ?>
                 <?php if ($body = $module->view(Spot::BODY())): ?>
                     <?= $this->fetch($module->id() . '::' . $body->template(), $body->data()) ?>
