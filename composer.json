@@ -47,5 +47,11 @@
     "roave/security-advisories": "dev-master",
     "symfony/var-dumper": "^5.0",
     "vlucas/phpdotenv": "^4.1"
+  },
+  "scripts": {
+    "serve": [
+      "Composer\\Config::disableProcessTimeout",
+      "php -S localhost:8000 -t public public/index.php"
+    ]
   }
 }
