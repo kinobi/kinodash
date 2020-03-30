@@ -34,8 +34,14 @@
             </div>
         </section>
         <footer class="modal-card-foot">
-            <button id="jira-btn-update" class="button is-success">Commencer</button>
-            <button id="jira-btn-delete" class="button is-danger">Stop</button>
+            <button id="jira-btn-update" class="button is-success">
+                <span class="icon"><i class="fas fa-play"></i></span>
+                <span>Commencer</span>
+            </button>
+            <button id="jira-btn-delete" class="button is-danger">
+                <span class="icon"><i class="fas fa-stop"></i></span>
+                <span>Stop</span>
+            </button>
             <button id="jira-btn-cancel" class="button">Annuler</button>
         </footer>
     </div>
@@ -70,6 +76,7 @@
             return;
         }
 
+        btnUpdate.classList.add('is-loading');
         axios.post('/jira/start', {
                 current: issueSelected.value
             },
@@ -83,9 +90,11 @@
             });
 
         modal.classList.remove('is-active');
+        btnUpdate.classList.remove('is-loading');
     });
 
     btnDelete.addEventListener('click', function (e) {
+        btnDelete.classList.add('is-loading');
         axios.delete('/jira/stop', null, {withCredentials: true})
             .then(function (response) {
                 currentA.href = response.data.a;
@@ -96,6 +105,7 @@
             });
 
         modal.classList.remove('is-active');
+        btnDelete.classList.remove('is-loading');
     });
 
 
