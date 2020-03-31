@@ -7,7 +7,7 @@
         </header>
         <section class="modal-card-body">
             <div class="table-container">
-                <table class="table is-stripped is-hoverable is-full-width">
+                <table class="table is-stripped is-hoverable is-fullwidth">
                     <thead>
                     <tr>
                         <th>#</th>

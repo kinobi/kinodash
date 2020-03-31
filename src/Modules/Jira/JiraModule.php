@@ -161,13 +161,7 @@ class JiraModule implements Module
             fn() => null
         );
 
-        $this->issues = $this->cache->get(
-            $this->generateUserCacheKey('issues'),
-            function (CacheItem $item) use ($config) {
-                $item->expiresAfter(CarbonInterval::hour());
-                return $this->getIssues($config);
-            }
-        );
+        $this->issues = $this->getIssues($config);
 
         $this->booted = true;
     }
