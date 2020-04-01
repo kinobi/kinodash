@@ -38,12 +38,17 @@
                     <?= $this->fetch($module->id() . '::' . $body->template(), $body->data()) ?>
                 <?php endif ?>
             <?php endforeach ?>
+
+            <kinodash-launcher></kinodash-launcher>
         </div>
     </div>
 
     <div class="hero-foot">
     </div>
 </section>
+<script type="module">
+    import '/components/Launcher.js';
+</script>
 <?php foreach ($modules as $module): ?>
     <?php if ($script = $module->view(Spot::SCRIPT())): ?>
         <?= $this->fetch($module->id() . '::' . $script->template(), $script->data()) ?>

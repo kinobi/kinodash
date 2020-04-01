@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kinodash\App\Controllers;
 
 use Auth0\SDK\Auth0;
+use Exception;
 use Kinodash\Dashboard\Module\ConfigCollection;
 use Kinodash\Dashboard\Module\ModuleCollection;
 use Psr\Http\Message\ResponseInterface as Response;
@@ -36,6 +37,11 @@ class ModuleController
             return $response->withStatus(500);
         }
 
-        return $module->api($request, $response, explode('/', $params));
+        try {
+            return $module->api($request, $response, explode('/', $params));
+        } catch (Exception $e) {
+            $response->getBody()->write(json_encode(['error' => $e->getMessage()], JSON_THROW_ON_ERROR, 512));
+            return $response->withHeader('Content-Type', 'application/json')->withStatus(500);
+        }
     }
 }

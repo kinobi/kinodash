@@ -6,7 +6,6 @@ namespace Kinodash\Modules\Jira;
 
 use Auth0\SDK\Auth0;
 use Carbon\CarbonImmutable;
-use Carbon\CarbonInterval;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;

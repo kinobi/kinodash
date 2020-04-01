@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Auth0\SDK\Auth0;
 use DI\ContainerBuilder;
+use Elastica\Client as ElasticsearchClient;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\Uri;
 use Kinodash\App\Controllers\DashboardController;
@@ -11,6 +12,7 @@ use Kinodash\App\Controllers\ModuleController;
 use Kinodash\Dashboard\Module\ModuleCollection;
 use Kinodash\Modules\Auth0\Auth0Module;
 use Kinodash\Modules\Bing\BingModule;
+use Kinodash\Modules\Bookmark\BookmarkModule;
 use Kinodash\Modules\Greeting\GreetingModule;
 use Kinodash\Modules\Jira\JiraModule;
 use League\Flysystem\Filesystem;
@@ -33,6 +35,7 @@ $settings = [
         'scope' => 'openid profile email',
     ],
     'cache.redis' => env('REDIS_URL'),
+    'cache.elasticsearch' => env('BONSAI_URL'),
     'storage.dropbox' => [
         'access_token' => env('DROPBOX_ACCESS_TOKEN'),
     ],
@@ -45,6 +48,10 @@ $infra = [
 
     Cache::class => static function (ContainerInterface $c) {
         return new Cache(Cache::createConnection($c->get('cache.redis')));
+    },
+
+    ElasticsearchClient::class => static function (ContainerInterface $c) {
+        return new ElasticsearchClient($c->get('cache.elasticsearch'));
     },
 
     HttpClient::class => static function (ContainerInterface $c) {
@@ -68,6 +75,14 @@ $modules = [
         return new BingModule($c->get(HttpClient::class), $c->get(Cache::class));
     },
 
+    BookmarkModule::class => static function (ContainerInterface $c) {
+        return new BookmarkModule(
+            $c->get(Filesystem::class),
+            $c->get(HttpClient::class),
+            $c->get(ElasticsearchClient::class)
+        );
+    },
+
     Auth0Module::class => static function (ContainerInterface $c) {
         return new Auth0Module($c->get(Auth0::class), new Uri($c->get('auth.auth0')['redirect_uri']));
     },
@@ -89,6 +104,7 @@ $modules = [
         $modules = [
             $c->get(Auth0Module::class),
             $c->get(BingModule::class),
+            $c->get(BookmarkModule::class),
             $c->get(GreetingModule::class),
             $c->get(JiraModule::class),
         ];
