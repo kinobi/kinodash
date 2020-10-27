@@ -203,7 +203,9 @@ class JiraModule implements Module
                             '"ICE BOX"',
                             '"In Progress"',
                             '"QA REVIEW"',
-                            '"To Do"'
+                            '"To Do"',
+                            '"To Do Tech"',
+                            '"In Progress Tech"',
                         ]
                     )
                 ),
