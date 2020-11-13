@@ -206,6 +206,7 @@ class JiraModule implements Module
                             '"To Do"',
                             '"To Do Tech"',
                             '"In Progress Tech"',
+                            '"Identification"',
                         ]
                     )
                 ),
