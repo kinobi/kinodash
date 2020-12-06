@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Kinodash\Modules\Jira;
 
-use Auth0\SDK\Auth0;
 use Carbon\CarbonImmutable;
-use Carbon\CarbonInterval;
 use GuzzleHttp\Client as HttpClient;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Uri;
@@ -28,8 +26,6 @@ class JiraModule implements Module
 
     private string $id = 'jira';
 
-    private Auth0 $auth0;
-
     private HttpClient $httpClient;
 
     private array $issues;
@@ -44,9 +40,8 @@ class JiraModule implements Module
 
     private Filesystem $filesystem;
 
-    public function __construct(Auth0 $auth0, HttpClient $httpClient, RedisAdapter $cache, Filesystem $filesystem)
+    public function __construct(HttpClient $httpClient, RedisAdapter $cache, Filesystem $filesystem)
     {
-        $this->auth0 = $auth0;
         $this->httpClient = $httpClient;
         $this->cache = $cache;
         $this->filesystem = $filesystem;
@@ -116,7 +111,7 @@ class JiraModule implements Module
 
     private function generateUserCacheKey(string $key): string
     {
-        return sprintf('jira.%s.%s', sha1($this->user['email']), $key);
+        return sprintf('jira.%s', $key);
     }
 
     private function createTaskResponse(ResponseInterface $response): ResponseInterface
@@ -147,11 +142,6 @@ class JiraModule implements Module
      */
     public function boot(Config $config): void
     {
-        $this->user = $this->auth0->getUser();
-        if (!$this->user) {
-            return;
-        }
-
         $this->jiraHost = (new Uri())
             ->withScheme('https')
             ->withHost($config->getHost());

@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Kinodash\Modules\Greeting;
 
-use Auth0\SDK\Auth0;
 use Carbon\CarbonImmutable;
 use DateTimeZone;
-use Kinodash\Dashboard\Spot;
 use Kinodash\Dashboard\Module\Config;
 use Kinodash\Dashboard\Module\Module;
 use Kinodash\Dashboard\Module\ModuleTemplate;
 use Kinodash\Dashboard\Module\ModuleView;
+use Kinodash\Dashboard\Spot;
 
 class GreetingModule implements Module
 {
@@ -23,20 +22,8 @@ class GreetingModule implements Module
 
     private CarbonImmutable $now;
 
-    private Auth0 $auth0;
-
-    public function __construct(Auth0 $auth0)
-    {
-        $this->auth0 = $auth0;
-    }
-
     public function boot(Config $config): void
     {
-        $user = $this->auth0->getUser();
-        if(!$user) {
-            return;
-        }
-
         $options = $config->getOptions();
 
         $greetings = array_merge(
@@ -47,12 +34,34 @@ class GreetingModule implements Module
         $this->now = CarbonImmutable::now(new DateTimeZone($options['timezone'] ?? 'Europe/Paris'));
 
         $this->greetings = sprintf(
-            '%s %s',
-            $greetings[$this->getPeriod()],
-            $user['name']
+            '%s',
+            $greetings[$this->getPeriod()]
         );
 
         $this->booted = true;
+    }
+
+    private function getPeriod(): string
+    {
+        $hour = $this->now->hour;
+
+        if ($hour >= 22) {
+            return 'night';
+        }
+
+        if ($hour >= 18) {
+            return 'evening';
+        }
+
+        if ($hour >= 12) {
+            return 'pm';
+        }
+
+        if ($hour >= 6) {
+            return 'am';
+        }
+
+        return 'night';
     }
 
     /**
@@ -84,28 +93,5 @@ class GreetingModule implements Module
     public function templateFolder(): ?string
     {
         return __DIR__ . '/templates';
-    }
-
-    private function getPeriod(): string
-    {
-        $hour = $this->now->hour;
-
-        if ($hour >= 22) {
-            return 'night';
-        }
-
-        if ($hour >= 18) {
-            return 'evening';
-        }
-
-        if ($hour >= 12) {
-            return 'pm';
-        }
-
-        if ($hour >= 6) {
-            return 'am';
-        }
-
-        return 'night';
     }
 }

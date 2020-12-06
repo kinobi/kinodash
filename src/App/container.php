@@ -2,14 +2,11 @@
 
 declare(strict_types=1);
 
-use Auth0\SDK\Auth0;
 use DI\ContainerBuilder;
 use GuzzleHttp\Client as HttpClient;
-use GuzzleHttp\Psr7\Uri;
 use Kinodash\App\Controllers\DashboardController;
 use Kinodash\App\Controllers\ModuleController;
 use Kinodash\Dashboard\Module\ModuleCollection;
-use Kinodash\Modules\Auth0\Auth0Module;
 use Kinodash\Modules\Bing\BingModule;
 use Kinodash\Modules\Greeting\GreetingModule;
 use Kinodash\Modules\Jira\JiraModule;
@@ -19,19 +16,11 @@ use Psr\Container\ContainerInterface;
 use Spatie\Dropbox\Client as DropboxClient;
 use Spatie\FlysystemDropbox\DropboxAdapter;
 use Symfony\Component\Cache\Adapter\RedisAdapter as Cache;
-
 use function DI\env;
 
 $builder = new ContainerBuilder();
 
 $settings = [
-    'auth.auth0' => [
-        'domain' => env('AUTH0_DOMAIN'),
-        'client_id' => env('AUTH0_CLIENT_ID'),
-        'client_secret' => env('AUTH0_CLIENT_SECRET'),
-        'redirect_uri' => env('AUTH0_CALLBACK_URL'),
-        'scope' => 'openid profile email',
-    ],
     'cache.redis' => env('REDIS_URL'),
     'storage.dropbox' => [
         'access_token' => env('DROPBOX_ACCESS_TOKEN'),
@@ -39,10 +28,6 @@ $settings = [
 ];
 
 $infra = [
-    Auth0::class => static function (ContainerInterface $c) {
-        return new Auth0($c->get('auth.auth0'));
-    },
-
     Cache::class => static function (ContainerInterface $c) {
         return new Cache(Cache::createConnection($c->get('cache.redis')));
     },
@@ -68,17 +53,12 @@ $modules = [
         return new BingModule($c->get(HttpClient::class), $c->get(Cache::class));
     },
 
-    Auth0Module::class => static function (ContainerInterface $c) {
-        return new Auth0Module($c->get(Auth0::class), new Uri($c->get('auth.auth0')['redirect_uri']));
-    },
-
     GreetingModule::class => static function (ContainerInterface $c) {
-        return new GreetingModule($c->get(Auth0::class));
+        return new GreetingModule();
     },
 
     JiraModule::class => static function (ContainerInterface $c) {
         return new JiraModule(
-            $c->get(Auth0::class),
             $c->get(HttpClient::class),
             $c->get(Cache::class),
             $c->get(Filesystem::class)
@@ -87,7 +67,6 @@ $modules = [
 
     ModuleCollection::class => static function (ContainerInterface $c) {
         $modules = [
-            $c->get(Auth0Module::class),
             $c->get(BingModule::class),
             $c->get(GreetingModule::class),
             $c->get(JiraModule::class),
@@ -99,11 +78,11 @@ $modules = [
 
 $controllers = [
     DashboardController::class => static function (ContainerInterface $c) {
-        return new DashboardController($c->get(Plates::class), $c->get(ModuleCollection::class), $c->get(Auth0::class));
+        return new DashboardController($c->get(Plates::class), $c->get(ModuleCollection::class));
     },
 
     ModuleController::class => static function (ContainerInterface $c) {
-        return new ModuleController($c->get(ModuleCollection::class), $c->get(Auth0::class));
+        return new ModuleController($c->get(ModuleCollection::class));
     }
 ];
 

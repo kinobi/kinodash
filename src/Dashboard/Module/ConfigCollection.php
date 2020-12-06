@@ -22,11 +22,9 @@ final class ConfigCollection implements IteratorAggregate
         $this->configs = $configs;
     }
 
-    public static function lookup(?array $userData, ServerRequestInterface $request): self
+    public static function lookup(ServerRequestInterface $request): self
     {
-        $configString = $userData[self::USER_MODULE_CONFIGS_KEY]
-            ?? $request->getServerParams()[self::ENV_CONFIG_KEY]
-            ?? '';
+        $configString = $request->getServerParams()[self::ENV_CONFIG_KEY] ?? '';
 
         if (empty($configString)) {
             throw new RuntimeException('No Module configured');
